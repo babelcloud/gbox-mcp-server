@@ -1,4 +1,4 @@
-# GBOX ANDROID MCP SERVER
+# GBOX MCP SERVER
 
 [![npm version](https://img.shields.io/npm/v/@gbox.ai/mcp-server.svg)](https://www.npmjs.com/package/@gbox.ai/mcp-server)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
