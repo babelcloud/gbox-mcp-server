@@ -53,7 +53,7 @@ jobs:
           echo "Updated package.json to version ${{ steps.get_version.outputs.version_without_v }}"
 
       - name: Publish to npm
-        run: pnpm publish --access public
+        run: pnpm publish --access public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       
