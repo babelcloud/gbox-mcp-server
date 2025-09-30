@@ -1,0 +1,86 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Get version from tag
+        id: get_version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION=${GITHUB_REF#refs/tags/}
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "version_without_v=${VERSION#v}" >> $GITHUB_OUTPUT
+          echo "Released version: $VERSION"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run type check
+        run: pnpm typecheck
+
+      - name: Run lint
+        run: pnpm lint
+
+      - name: Update package.json version
+        run: |
+          npm version ${{ steps.get_version.outputs.version_without_v }} --no-git-tag-version
+          echo "Updated package.json to version ${{ steps.get_version.outputs.version_without_v }}"
+
+      - name: Publish to npm
+        run: pnpm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      - name: Check version
+        run: |
+          echo "Published version: ${{ steps.get_version.outputs.version_without_v }}"
+          echo "Package.json version: $(node -p "require('./package.json').version")"
+          echo "npm view version: $(npm view @gbox.ai/mcp-server version)"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.get_version.outputs.version }}
+          name: Release ${{ steps.get_version.outputs.version }}
+          body: |
+            ### Installation
+            ```bash
+            npm install -g @gbox.ai/mcp-server@${{ steps.get_version.outputs.version_without_v }}
+            ```
+            ### Usage
+            ```json
+            {
+              "gbox-android": {
+                "command": "npx",
+                "args": ["-y", "@gbox.ai/mcp-server@${{ steps.get_version.outputs.version_without_v }}"]
+              }
+            }
+            ```
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
