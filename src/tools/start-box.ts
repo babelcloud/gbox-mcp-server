@@ -61,7 +61,7 @@ export function handleStartBox(logger: MCPLogger) {
         });
 
         const { resolution } = await box.display();
-        box.action.updateSettings({
+        await box.action.updateSettings({
           scale: calculateResizeRatio(resolution),
         });
 
