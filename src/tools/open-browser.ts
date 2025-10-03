@@ -27,7 +27,7 @@ export function handleOpenBrowser(logger: MCPLogger) {
       await logger.info("Browser opened");
 
       // Wait for browser to fully open
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
       // Take screenshot
       const screenshot = await box.action.screenshot({

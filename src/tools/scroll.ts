@@ -12,7 +12,9 @@ export const scrollParamsSchema = {
   boxId: z.string().describe("ID of the Linux box"),
   direction: z
     .enum(["up", "down"])
-    .describe("Direction to scroll. 'up' means scroll up to see more content above, 'down' means scroll down to see more content below."),
+    .describe(
+      "Direction to scroll. 'up' means scroll up to see more content above, 'down' means scroll down to see more content below."
+    ),
   distance: z
     .enum(["tiny", "short", "medium", "long"])
     .optional()
@@ -23,7 +25,9 @@ export const scrollParamsSchema = {
 type ScrollParams = z.infer<z.ZodObject<typeof scrollParamsSchema>>;
 
 // Distance multipliers based on gru-agent implementation
-function getScrollAmount(distance: "tiny" | "short" | "medium" | "long"): number {
+function getScrollAmount(
+  distance: "tiny" | "short" | "medium" | "long"
+): number {
   const amounts = {
     tiny: 1,
     short: 3,
@@ -36,7 +40,11 @@ function getScrollAmount(distance: "tiny" | "short" | "medium" | "long"): number
 export function handleScroll(logger: MCPLogger) {
   return async ({ boxId, direction, distance = "medium" }: ScrollParams) => {
     try {
-      await logger.info("Scroll command invoked", { boxId, direction, distance });
+      await logger.info("Scroll command invoked", {
+        boxId,
+        direction,
+        distance,
+      });
 
       const box = await attachBox(boxId);
 

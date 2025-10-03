@@ -30,7 +30,12 @@ type ClickParams = z.infer<z.ZodObject<typeof clickParamsSchema>>;
 export function handleClick(logger: MCPLogger) {
   return async ({ boxId, target, button, double }: ClickParams) => {
     try {
-      await logger.info("Click command invoked", { boxId, target, button, double });
+      await logger.info("Click command invoked", {
+        boxId,
+        target,
+        button,
+        double,
+      });
 
       const box = await attachBox(boxId);
 

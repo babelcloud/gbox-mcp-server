@@ -19,7 +19,9 @@ export const startAndroidBoxParamsSchema = {
     ),
 };
 
-type StartAndroidBoxParams = z.infer<z.ZodObject<typeof startAndroidBoxParamsSchema>>;
+type StartAndroidBoxParams = z.infer<
+  z.ZodObject<typeof startAndroidBoxParamsSchema>
+>;
 
 export function handleStartAndroidBox(logger: MCPLogger) {
   return async (args: StartAndroidBoxParams) => {

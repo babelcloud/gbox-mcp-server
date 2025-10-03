@@ -17,7 +17,9 @@ export const startLinuxBoxParamsSchema = {
     ),
 };
 
-type StartLinuxBoxParams = z.infer<z.ZodObject<typeof startLinuxBoxParamsSchema>>;
+type StartLinuxBoxParams = z.infer<
+  z.ZodObject<typeof startLinuxBoxParamsSchema>
+>;
 
 export function handleStartLinuxBox(logger: MCPLogger) {
   return async (args: StartLinuxBoxParams) => {

@@ -102,18 +102,6 @@ import {
   START_LINUX_BOX_TOOL,
   startLinuxBoxParamsSchema,
 } from "./tools/start-linux-box.js";
-import {
-  handleGetBox,
-  GET_BOX_DESCRIPTION,
-  GET_BOX_TOOL,
-  getBoxParamsSchema,
-} from "./tools/get-box.js";
-import {
-  handleListBoxes,
-  LIST_BOXES_DESCRIPTION,
-  LIST_BOXES_TOOL,
-  listBoxesParamsSchema,
-} from "./tools/list-boxes.js";
 
 const isSse = config.mode === "sse";
 const isAndroid = config.platform === "android";
@@ -308,34 +296,7 @@ if (isLinux) {
     handlePressKey(logger)
   );
 
-  mcpServer.tool(
-    GET_BOX_TOOL,
-    GET_BOX_DESCRIPTION,
-    getBoxParamsSchema,
-    handleGetBox(logger)
-  );
-
-  mcpServer.tool(
-    LIST_BOXES_TOOL,
-    LIST_BOXES_DESCRIPTION,
-    listBoxesParamsSchema,
-    handleListBoxes(logger)
-  );
 }
-
-// mcpServer.tool(
-//   LIST_BOXES_TOOL,
-//   LIST_BOXES_DESCRIPTION,
-//   listBoxesParamsSchema,
-//   handleListBoxes(logger)
-// );
-
-// mcpServer.tool(
-//   GET_BOX_TOOL,
-//   GET_BOX_DESCRIPTION,
-//   getBoxParamsSchema,
-//   handleGetBox(logger)
-// );
 
 // mcpServer.tool(
 //   UNINSTALL_APK_TOOL,
