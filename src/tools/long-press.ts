@@ -6,7 +6,7 @@ import { extractImageInfo } from "../sdk/utils.js";
 export const LONG_PRESS_TOOL = "long_press";
 
 export const LONG_PRESS_DESCRIPTION =
-  "Perform a long press (press and hold) on a UI element on the Android device. Useful for triggering context menus, selecting text, or initiating drag operations.";
+  "Perform a long press (press and hold) on a UI element. Useful for triggering context menus, selecting text, or initiating drag operations.";
 
 export const longPressParamsSchema = {
   boxId: z.string().describe("ID of the box"),

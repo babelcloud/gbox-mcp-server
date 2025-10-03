@@ -61,24 +61,68 @@ import {
   pressButtonParamsSchema,
 } from "./tools/press-button.js";
 import {
-  handleStartBox,
-  START_BOX_DESCRIPTION,
-  START_BOX_TOOL,
-  startBoxParamsSchema,
-} from "./tools/start-box.js";
+  handleStartAndroidBox,
+  START_ANDROID_BOX_DESCRIPTION,
+  START_ANDROID_BOX_TOOL,
+  startAndroidBoxParamsSchema,
+} from "./tools/start-android-box.js";
 import {
   handleLongPress,
   LONG_PRESS_DESCRIPTION,
   LONG_PRESS_TOOL,
   longPressParamsSchema,
 } from "./tools/long-press.js";
+import {
+  handleClick,
+  CLICK_DESCRIPTION,
+  CLICK_TOOL,
+  clickParamsSchema,
+} from "./tools/click.js";
+import {
+  handleScroll,
+  SCROLL_DESCRIPTION,
+  SCROLL_TOOL,
+  scrollParamsSchema,
+} from "./tools/scroll.js";
+import {
+  handleOpenBrowser,
+  OPEN_BROWSER_DESCRIPTION,
+  OPEN_BROWSER_TOOL,
+  openBrowserParamsSchema,
+} from "./tools/open-browser.js";
+import {
+  handlePressKey,
+  PRESS_KEY_DESCRIPTION,
+  PRESS_KEY_TOOL,
+  pressKeyParamsSchema,
+} from "./tools/press-key.js";
+import {
+  handleStartLinuxBox,
+  START_LINUX_BOX_DESCRIPTION,
+  START_LINUX_BOX_TOOL,
+  startLinuxBoxParamsSchema,
+} from "./tools/start-linux-box.js";
+import {
+  handleGetBox,
+  GET_BOX_DESCRIPTION,
+  GET_BOX_TOOL,
+  getBoxParamsSchema,
+} from "./tools/get-box.js";
+import {
+  handleListBoxes,
+  LIST_BOXES_DESCRIPTION,
+  LIST_BOXES_TOOL,
+  listBoxesParamsSchema,
+} from "./tools/list-boxes.js";
 
 const isSse = config.mode === "sse";
+const isAndroid = config.platform === "android";
+const isLinux = config.platform === "linux";
 
 // Create MCP server instance
 const mcpServer = new McpServer(
   {
-    name: "gbox-android",
+    name: `gbox-${config.platform}`,
     version: "1.0.0",
   },
   {
@@ -143,13 +187,8 @@ mcpServer.prompt(GBOX_MANUAL, GBOX_MANUAL_DESCRIPTION, () => {
 });
 
 // Register tools with Zod schemas
-mcpServer.tool(
-  START_BOX_TOOL,
-  START_BOX_DESCRIPTION,
-  startBoxParamsSchema,
-  handleStartBox(logger)
-);
 
+// Common tools for both platforms
 mcpServer.tool(
   WAIT_TOOL,
   WAIT_TOOL_DESCRIPTION,
@@ -165,48 +204,11 @@ mcpServer.tool(
 );
 
 mcpServer.tool(
-  OPEN_APP_TOOL,
-  OPEN_APP_DESCRIPTION,
-  openAppParamsSchema,
-  handleOpenApp(logger)
-);
-
-mcpServer.tool(
-  CLOSE_APP_TOOL,
-  CLOSE_APP_DESCRIPTION,
-  closeAppParamsSchema,
-  handleCloseApp(logger)
-);
-
-mcpServer.tool(
-  INSTALL_APK_TOOL,
-  INSTALL_APK_DESCRIPTION,
-  installApkParamsSchema,
-  handleInstallApk(logger)
-);
-
-mcpServer.tool(
-  PRESS_BUTTON_TOOL,
-  PRESS_BUTTON_DESCRIPTION,
-  pressButtonParamsSchema,
-  handlePressButton(logger)
-);
-
-mcpServer.tool(
   DRAG_TOOL,
   DRAG_DESCRIPTION,
   dragParamsSchema,
   handleDrag(logger)
 );
-
-mcpServer.tool(
-  SWIPE_TOOL,
-  SWIPE_DESCRIPTION,
-  swipeParamsSchema,
-  handleSwipe(logger)
-);
-
-mcpServer.tool(TAP_TOOL, TAP_DESCRIPTION, tapParamsSchema, handleTap(logger));
 
 mcpServer.tool(
   TYPE_TOOL,
@@ -221,6 +223,105 @@ mcpServer.tool(
   longPressParamsSchema,
   handleLongPress(logger)
 );
+
+// Android-specific tools
+if (isAndroid) {
+  mcpServer.tool(
+    START_ANDROID_BOX_TOOL,
+    START_ANDROID_BOX_DESCRIPTION,
+    startAndroidBoxParamsSchema,
+    handleStartAndroidBox(logger)
+  );
+
+  mcpServer.tool(
+    OPEN_APP_TOOL,
+    OPEN_APP_DESCRIPTION,
+    openAppParamsSchema,
+    handleOpenApp(logger)
+  );
+
+  mcpServer.tool(
+    CLOSE_APP_TOOL,
+    CLOSE_APP_DESCRIPTION,
+    closeAppParamsSchema,
+    handleCloseApp(logger)
+  );
+
+  mcpServer.tool(
+    INSTALL_APK_TOOL,
+    INSTALL_APK_DESCRIPTION,
+    installApkParamsSchema,
+    handleInstallApk(logger)
+  );
+
+  mcpServer.tool(
+    PRESS_BUTTON_TOOL,
+    PRESS_BUTTON_DESCRIPTION,
+    pressButtonParamsSchema,
+    handlePressButton(logger)
+  );
+
+  mcpServer.tool(
+    SWIPE_TOOL,
+    SWIPE_DESCRIPTION,
+    swipeParamsSchema,
+    handleSwipe(logger)
+  );
+
+  mcpServer.tool(TAP_TOOL, TAP_DESCRIPTION, tapParamsSchema, handleTap(logger));
+}
+
+// Linux-specific tools
+if (isLinux) {
+  mcpServer.tool(
+    START_LINUX_BOX_TOOL,
+    START_LINUX_BOX_DESCRIPTION,
+    startLinuxBoxParamsSchema,
+    handleStartLinuxBox(logger)
+  );
+
+  mcpServer.tool(
+    CLICK_TOOL,
+    CLICK_DESCRIPTION,
+    clickParamsSchema,
+    handleClick(logger)
+  );
+
+  mcpServer.tool(
+    SCROLL_TOOL,
+    SCROLL_DESCRIPTION,
+    scrollParamsSchema,
+    handleScroll(logger)
+  );
+
+  mcpServer.tool(
+    OPEN_BROWSER_TOOL,
+    OPEN_BROWSER_DESCRIPTION,
+    openBrowserParamsSchema,
+    handleOpenBrowser(logger)
+  );
+
+  mcpServer.tool(
+    PRESS_KEY_TOOL,
+    PRESS_KEY_DESCRIPTION,
+    pressKeyParamsSchema,
+    handlePressKey(logger)
+  );
+
+  mcpServer.tool(
+    GET_BOX_TOOL,
+    GET_BOX_DESCRIPTION,
+    getBoxParamsSchema,
+    handleGetBox(logger)
+  );
+
+  mcpServer.tool(
+    LIST_BOXES_TOOL,
+    LIST_BOXES_DESCRIPTION,
+    listBoxesParamsSchema,
+    handleListBoxes(logger)
+  );
+}
 
 // mcpServer.tool(
 //   LIST_BOXES_TOOL,

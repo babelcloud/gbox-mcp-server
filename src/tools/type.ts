@@ -6,7 +6,7 @@ import { extractImageInfo } from "../sdk/utils.js";
 export const TYPE_TOOL = "type";
 
 export const TYPE_DESCRIPTION =
-  "Type text content into the currently focused input on the Android device. Optionally press Enter after typing, and choose to replace or append.";
+  "Type text content into the currently focused input. Optionally press Enter after typing, and choose to replace or append.";
 
 export const typeParamsSchema = {
   boxId: z.string().describe("ID of the box"),

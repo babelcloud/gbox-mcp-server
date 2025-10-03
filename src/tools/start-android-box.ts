@@ -6,11 +6,11 @@ import { openUrlInBrowser, startLocalScrcpy } from "../sdk/utils.js";
 import { deviceList } from "../sdk/android.service.js";
 import { calculateResizeRatio } from "../sdk/utils.js";
 
-export const START_BOX_TOOL = "start_box";
-export const START_BOX_DESCRIPTION =
-  "Start a GBOX(Android) by the given ID. If the GBOX ID is not provided, a new GBOX will be created. MUST call this tool first when starting a task.";
+export const START_ANDROID_BOX_TOOL = "start_android_box";
+export const START_ANDROID_BOX_DESCRIPTION =
+  "Start a GBOX(Android) by the given ID. If the GBOX ID is not provided, a new GBOX will be created (supports both physical and virtual devices). MUST call this tool first when starting a task.";
 
-export const startBoxParamsSchema = {
+export const startAndroidBoxParamsSchema = {
   gboxId: z
     .string()
     .optional()
@@ -19,10 +19,10 @@ export const startBoxParamsSchema = {
     ),
 };
 
-type StartBoxParams = z.infer<z.ZodObject<typeof startBoxParamsSchema>>;
+type StartAndroidBoxParams = z.infer<z.ZodObject<typeof startAndroidBoxParamsSchema>>;
 
-export function handleStartBox(logger: MCPLogger) {
-  return async (args: StartBoxParams) => {
+export function handleStartAndroidBox(logger: MCPLogger) {
+  return async (args: StartAndroidBoxParams) => {
     try {
       await logger.info("Starting Box", args);
 
