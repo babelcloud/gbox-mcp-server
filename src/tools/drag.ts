@@ -6,7 +6,7 @@ import { extractImageInfo } from "../sdk/utils.js";
 export const DRAG_TOOL = "drag";
 
 export const DRAG_DESCRIPTION =
-  "Drag a UI element on the Android device by long-pressing and moving it to a new location – for example, reorganising home-screen icons or moving an item into a folder.";
+  "Drag a UI element by long-pressing and moving it to a new location – for example, reorganising icons or moving an item into a folder.";
 
 export const dragParamsSchema = {
   boxId: z.string().describe("ID of the box"),
