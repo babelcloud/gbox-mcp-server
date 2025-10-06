@@ -188,22 +188,20 @@ export function handlePressKey(logger: MCPLogger) {
       });
 
       return {
-        content: {
-          content: [
-            {
-              type: "text" as const,
-              text: "Keys pressed successfully",
-            },
-            ...(result?.screenshot?.after?.uri
-              ? [
-                  {
-                    type: "image" as const,
-                    ...extractImageInfo(result.screenshot.after.uri),
-                  },
-                ]
-              : []),
-          ],
-        },
+        content: [
+          {
+            type: "text" as const,
+            text: "Keys pressed successfully",
+          },
+          ...(result?.screenshot?.after?.uri
+            ? [
+                {
+                  type: "image" as const,
+                  ...extractImageInfo(result.screenshot.after.uri),
+                },
+              ]
+            : []),
+        ],
       };
     } catch (error) {
       await logger.error("Failed to press keys", { boxId: args?.boxId, error });
