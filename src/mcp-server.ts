@@ -102,10 +102,41 @@ import {
   START_LINUX_BOX_TOOL,
   startLinuxBoxParamsSchema,
 } from "./tools/start-linux-box.js";
+import {
+  handleStartBrowserBox,
+  START_BROWSER_BOX_DESCRIPTION,
+  START_BROWSER_BOX_TOOL,
+  startBrowserBoxParamsSchema,
+} from "./tools/start-browser-box.js";
+import {
+  handleListTabs,
+  LIST_TABS_DESCRIPTION,
+  LIST_TABS_TOOL,
+  listTabsParamsSchema,
+} from "./tools/list-tabs.js";
+import {
+  handleOpenTab,
+  OPEN_TAB_DESCRIPTION,
+  OPEN_TAB_TOOL,
+  openTabParamsSchema,
+} from "./tools/open-tab.js";
+import {
+  handleSwitchTab,
+  SWITCH_TAB_DESCRIPTION,
+  SWITCH_TAB_TOOL,
+  switchTabParamsSchema,
+} from "./tools/switch-tab.js";
+import {
+  handleCloseTab,
+  CLOSE_TAB_DESCRIPTION,
+  CLOSE_TAB_TOOL,
+  closeTabParamsSchema,
+} from "./tools/close-tab.js";
 
 const isSse = config.mode === "sse";
 const isAndroid = config.platform === "android";
 const isLinux = config.platform === "linux";
+const isBrowser = config.platform === "browser";
 
 // Create MCP server instance
 const mcpServer = new McpServer(
@@ -295,7 +326,65 @@ if (isLinux) {
     pressKeyParamsSchema,
     handlePressKey(logger)
   );
+}
 
+// Browser-specific tools (same as Linux but without open_browser)
+if (isBrowser) {
+  mcpServer.tool(
+    START_BROWSER_BOX_TOOL,
+    START_BROWSER_BOX_DESCRIPTION,
+    startBrowserBoxParamsSchema,
+    handleStartBrowserBox(logger)
+  );
+
+  mcpServer.tool(
+    CLICK_TOOL,
+    CLICK_DESCRIPTION,
+    clickParamsSchema,
+    handleClick(logger)
+  );
+
+  mcpServer.tool(
+    SCROLL_TOOL,
+    SCROLL_DESCRIPTION,
+    scrollParamsSchema,
+    handleScroll(logger)
+  );
+
+  mcpServer.tool(
+    PRESS_KEY_TOOL,
+    PRESS_KEY_DESCRIPTION,
+    pressKeyParamsSchema,
+    handlePressKey(logger)
+  );
+
+  mcpServer.tool(
+    LIST_TABS_TOOL,
+    LIST_TABS_DESCRIPTION,
+    listTabsParamsSchema,
+    handleListTabs(logger)
+  );
+
+  mcpServer.tool(
+    OPEN_TAB_TOOL,
+    OPEN_TAB_DESCRIPTION,
+    openTabParamsSchema,
+    handleOpenTab(logger)
+  );
+
+  mcpServer.tool(
+    SWITCH_TAB_TOOL,
+    SWITCH_TAB_DESCRIPTION,
+    switchTabParamsSchema,
+    handleSwitchTab(logger)
+  );
+
+  mcpServer.tool(
+    CLOSE_TAB_TOOL,
+    CLOSE_TAB_DESCRIPTION,
+    closeTabParamsSchema,
+    handleCloseTab(logger)
+  );
 }
 
 // mcpServer.tool(

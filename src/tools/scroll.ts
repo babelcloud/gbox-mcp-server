@@ -57,7 +57,7 @@ export function handleScroll(logger: MCPLogger) {
       const scrollY = Math.round(height / 2);
 
       // Calculate scroll amount based on distance and screen height
-      const scrollAmount = getScrollAmount(distance) * Math.round(height / 150);
+      const scrollAmount = getScrollAmount(distance) * Math.round(height / 400);
 
       const result = await box.action.scroll({
         x: scrollX,

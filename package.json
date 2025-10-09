@@ -1,6 +1,6 @@
 {
   "name": "@gbox.ai/mcp-server",
-  "version": "0.1.13",
+  "version": "0.1.15",
   "description": "MCP server exposing Gbox Android and Linux control tools via Model Context Protocol",
   "homepage": "https://gbox.ai",
   "author": "Gbox Team",
@@ -16,6 +16,7 @@
     "inspect": "npx @modelcontextprotocol/inspector@0.15.0 tsx src/index.ts",
     "inspect:android": "npx @modelcontextprotocol/inspector@0.15.0 tsx src/index.ts -- --android",
     "inspect:linux": "npx @modelcontextprotocol/inspector@0.15.0 tsx src/index.ts -- --linux",
+    "inspect:browser": "npx @modelcontextprotocol/inspector@0.15.0 tsx src/index.ts -- --browser",
     "dev": "node --loader ts-node/esm --no-warnings src/index.ts",
     "md2ts": "bin/md2ts.sh",
     "lint": "eslint src/**/*.ts",
@@ -31,6 +32,7 @@
     "ai",
     "android",
     "linux",
+    "browser",
     "control"
   ],
   "repository": {
