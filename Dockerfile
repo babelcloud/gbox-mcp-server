@@ -30,7 +30,6 @@ WORKDIR /app
 COPY --from=base /app/package.json /app/pnpm-lock.yaml ./
 COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/dist ./dist
-COPY --from=base /app/.env.defaults ./
 
 EXPOSE 28091
 
