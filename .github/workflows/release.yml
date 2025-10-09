@@ -5,8 +5,21 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+  packages: write
+
 jobs:
+  build-image:
+    uses: ./.github/workflows/image-build.yml
+    with:
+      build_default_branch_manifest: true
+    secrets:
+      GH_TOKEN_USER: ${{ secrets.GH_TOKEN_USER }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
   release:
+    needs: build-image
     runs-on: ubuntu-latest
     permissions:
       contents: write

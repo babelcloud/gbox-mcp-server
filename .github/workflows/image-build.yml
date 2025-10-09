@@ -1,0 +1,132 @@
+name: Build Image
+
+on:
+  workflow_call:
+    inputs:
+      submodule_path:
+        required: false
+        type: string
+      build_default_branch_manifest:
+        type: boolean
+        default: false
+      timeout_minutes:
+        type: number
+        default: 15
+      image_name:
+        required: false
+        type: string
+      file:
+        required: false
+        type: string
+      target:
+        required: false
+        type: string
+      fetch_depth:
+        required: false
+        type: number
+        default: 1
+      build_context:
+        required: false
+        type: string
+        default: .
+      runner_amd64:
+        required: false
+        type: string
+        default: '["ubuntu-24.04"]'
+      runner_arm64:
+        required: false
+        type: string
+        default: '["ubuntu-24.04-arm"]'
+
+    secrets:
+      GH_TOKEN_USER:
+        required: true
+      GH_TOKEN:
+        required: true
+      build_args:
+        required: false
+      build_secrets:
+        required: false
+
+jobs:
+  build-image:
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
+        include:
+          - arch: amd64
+            runner: ${{ fromJSON(inputs.runner_amd64) }}
+          - arch: arm64
+            runner: ${{ fromJSON(inputs.runner_arm64) }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: ${{ inputs.timeout_minutes }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: ${{ inputs.fetch_depth }}
+      - name: Resolve commit id and image name
+        run: |
+          echo "IMAGE_NAME=ghcr.io/${{ inputs.image_name || github.repository }}" >> $GITHUB_ENV
+          echo "COMMIT_ID=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+      - name: Resolve image tag with rev
+        run: echo "IMAGE_TAGS=${IMAGE_NAME}:${COMMIT_ID}-${{ matrix.arch }}" >> $GITHUB_ENV
+      - name: Resolve image tag with branch name
+        if: ${{ inputs.build_default_branch_manifest && github.event_name == 'push' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+        run: echo "IMAGE_TAGS=${IMAGE_TAGS},${IMAGE_NAME}:${GITHUB_REF_NAME}-${{ matrix.arch }}" >> $GITHUB_ENV
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.GH_TOKEN_USER }}
+          password: ${{ secrets.GH_TOKEN }}
+
+      - name: Calculate CACHEBUST value
+        run: echo "CACHEBUST=$(echo -n ${{ secrets.GH_TOKEN }} | md5sum | awk '{print $1}')" >> $GITHUB_ENV
+
+      - name: Set cache scope
+        run: |
+          CACHE_SCOPE=${{ env.IMAGE_NAME }}-${{ matrix.arch }}
+          CACHE_SCOPE=${CACHE_SCOPE//\//-}
+          echo "CACHE_SCOPE=${CACHE_SCOPE}" >> $GITHUB_ENV
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ inputs.build_context }}
+          push: true
+          file: ${{ inputs.file || './Dockerfile' }}
+          tags: ${{ env.IMAGE_TAGS }}
+          provenance: false
+          build-args: |
+            CACHEBUST=${{ env.CACHEBUST }}
+            COMMIT_ID=${{ env.COMMIT_ID  }}
+            ${{ secrets.build_args }}
+          secrets: |
+            npm_auth_token=${{ secrets.GH_TOKEN }}
+            "netrc=machine github.com login ${{ secrets.GH_TOKEN_USER }} password ${{ secrets.GH_TOKEN }}"
+            ${{ secrets.build_secrets }}
+          cache-from: type=gha,scope=${{ env.CACHE_SCOPE }}
+          cache-to: type=gha,scope=${{ env.CACHE_SCOPE }},mode=max
+          target: ${{ inputs.target }}
+
+  create-manifest:
+    needs: build-image
+    if: ${{ success() }}
+    uses: ./.github/workflows/create-manifest.yml
+    with:
+      fetch_depth: ${{ inputs.fetch_depth }}
+      build_default_branch_manifest: ${{ inputs.build_default_branch_manifest }}
+      image_name: ${{ inputs.image_name }}
+    secrets: inherit
+
+  sync-submodule:
+    needs: create-manifest
+    if: ${{ success() && inputs.submodule_path != '' }}
+    uses: ./.github/workflows/sync-submodule.yml
+    with:
+      submodule_path: ${{ inputs.submodule_path }}
+    secrets: inherit

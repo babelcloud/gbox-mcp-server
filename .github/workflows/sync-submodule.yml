@@ -1,0 +1,62 @@
+name: Sync Submodule
+
+on:
+  workflow_call:
+    inputs:
+      submodule_path:
+        description: "Path to the submodule that should be updated"
+        required: true
+        type: string
+    secrets:
+      GH_TOKEN_USER:
+        required: true
+      GH_TOKEN:
+        required: true
+
+jobs:
+  sync-submodule:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout private action
+        uses: actions/checkout@v4
+        with:
+          repository: babelcloud/update-submodule-action
+          ref: v1.0.2
+          token: ${{ secrets.GH_TOKEN }}
+          path: ./.github/actions/update-submodule-action
+      - name: Start sync submodule process
+        run: |
+          echo "Starting sync submodule process for path: ${{ inputs.submodule_path }}"
+          echo "Current branch: ${GITHUB_REF_NAME}"
+
+      - name: Branch exists
+        id: branchexists
+        run: |
+          echo "Checking if branch ${GITHUB_REF_NAME} exists..."
+          BRANCH=$(curl \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/babelcloud/babel-umbrella/branches/${GITHUB_REF_NAME}" \
+            | jq .name)
+          echo "Branch check result: $BRANCH"
+          echo "BRANCH=$BRANCH" >> $GITHUB_OUTPUT
+
+      - name: Update Submodule for Integration
+        if: ${{ steps.branchexists.outputs.BRANCH != 'null' }}
+        uses: ./.github/actions/update-submodule-action
+        with:
+          user: ${{ secrets.GH_TOKEN_USER }}
+          token: ${{ secrets.GH_TOKEN }}
+          repo_owner: babelcloud
+          repo: babel-umbrella
+          committor_username: robot
+          committor_email: robot@babel.cloud
+          path: ${{ inputs.submodule_path }}
+
+      - name: Sync submodule completion
+        run: |
+          echo "Sync submodule process completed"
+          echo "Submodule path: ${{ inputs.submodule_path }}"
+          echo "Branch: ${GITHUB_REF_NAME}"
