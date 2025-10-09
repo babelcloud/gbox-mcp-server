@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { attachBox } from "../sdk/index.js";
-import type { MCPLogger } from "../mcp-logger.js";
+import type { MCPLogger } from "../logger/logger.js";
 import type { BoxExecuteCommands } from "gbox-sdk";
 
 export const ADB_SHELL_TOOL = "adb_shell";
