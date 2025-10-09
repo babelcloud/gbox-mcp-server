@@ -21,6 +21,23 @@ export function handleCloseTab(logger: MCPLogger) {
 
       const box = await attachBox(boxId);
 
+      // Check number of tabs before closing
+      const tabInfo = await box.browser.listTabInfo();
+      const tabCount = tabInfo.data?.length || 0;
+
+      if (tabCount <= 1) {
+        await logger.info("Cannot close last tab", { boxId, tabId, tabCount });
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: `Cannot close tab ${tabId}: It is the last remaining tab. At least one tab must stay open.`,
+            },
+          ],
+          isError: true,
+        };
+      }
+
       // Close tab
       await box.browser.closeTab(tabId);
 
