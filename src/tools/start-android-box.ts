@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { CreateAndroid } from "gbox-sdk";
 import { gboxSDK } from "../sdk/index.js";
-import type { MCPLogger } from "../mcp-logger.js";
+import type { MCPLogger } from "../logger/logger.js";
 import { openUrlInBrowser, startLocalScrcpy } from "../sdk/utils.js";
 import { deviceList } from "../sdk/android.service.js";
 import { calculateResizeRatio } from "../sdk/utils.js";

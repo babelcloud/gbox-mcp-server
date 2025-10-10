@@ -1,14 +1,15 @@
 import { exec, execSync, spawn } from "child_process";
-import { logger } from "../mcp-server.js";
+import type { MCPLogger } from "../logger/logger.js";
 
 export const MAX_SCREEN_LENGTH = 1784;
 export const SCREENSHOT_SIZE_THRESHOLD = Math.floor(0.7 * 1024 * 1024); // 700 KB
 
 /**
  * Install scrcpy based on the current operating system
+ * @param logger - MCPLogger instance for logging
  * @returns Promise<boolean> - true if installation successful, false otherwise
  */
-export async function installScrcpy(): Promise<boolean> {
+export async function installScrcpy(logger: MCPLogger): Promise<boolean> {
   try {
     const currentOS = process.platform;
 
@@ -152,14 +153,9 @@ export function calculateResizeRatio({
  * Start local scrcpy instead of opening browser
  * This function handles the local environment setup and scrcpy launch
  */
-interface Logger {
-  info: (message: string, data?: unknown) => Promise<void>;
-  warning: (message: string, data?: unknown) => Promise<void>;
-  error: (message: string, data?: unknown) => Promise<void>;
-}
 
 export async function startLocalScrcpy(
-  logger: Logger,
+  logger: MCPLogger,
   deviceId: string
 ): Promise<{ success: boolean; message: string }> {
   // Global process references for unified management
@@ -177,7 +173,7 @@ export async function startLocalScrcpy(
       await logger.info("scrcpy is installed");
     } catch {
       await logger.info("scrcpy not installed, installing...");
-      scrcpyAvailable = await installScrcpy();
+      scrcpyAvailable = await installScrcpy(logger);
     }
 
     // If tools are available, execute related commands
@@ -257,7 +253,7 @@ export async function startLocalScrcpy(
  */
 async function cleanupProcesses(
   scrcpyProcess: ReturnType<typeof spawn> | null,
-  logger: Logger
+  logger: MCPLogger
 ) {
   const processes = [{ name: "scrcpy", process: scrcpyProcess }];
 

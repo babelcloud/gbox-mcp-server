@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { MCPLogger } from "../mcp-logger.js";
+import type { MCPLogger } from "../logger/logger.js";
 import { attachBox } from "../sdk/index.js";
 
 export const CLOSE_TAB_TOOL = "close_tab";

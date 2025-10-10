@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { attachBox } from "../sdk/index.js";
-import type { MCPLogger } from "../mcp-logger.js";
+import type { MCPLogger } from "../logger/logger.js";
 import type { ActionPressKey, TimeString } from "gbox-sdk";
 import { extractImageInfo } from "../sdk/utils.js";
 

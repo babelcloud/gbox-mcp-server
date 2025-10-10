@@ -7,63 +7,63 @@ export class MCPLogger {
     this.logFn = logFn;
   }
 
-  async debug(message: string, ...args: any[]): Promise<void> {
+  async debug(message: string, ...args: unknown[]): Promise<void> {
     await this.logFn({
       level: "debug",
       data: args.length > 0 ? { message, args } : message,
     });
   }
 
-  async info(message: string, ...args: any[]): Promise<void> {
+  async info(message: string, ...args: unknown[]): Promise<void> {
     await this.logFn({
       level: "info",
       data: args.length > 0 ? { message, args } : message,
     });
   }
 
-  async warning(message: string, ...args: any[]): Promise<void> {
+  async warning(message: string, ...args: unknown[]): Promise<void> {
     await this.logFn({
       level: "warning",
       data: args.length > 0 ? { message, args } : message,
     });
   }
 
-  async error(message: string, ...args: any[]): Promise<void> {
+  async error(message: string, ...args: unknown[]): Promise<void> {
     await this.logFn({
       level: "error",
       data: args.length > 0 ? { message, args } : message,
     });
   }
 
-  async notice(message: string, ...args: any[]): Promise<void> {
+  async notice(message: string, ...args: unknown[]): Promise<void> {
     await this.logFn({
       level: "notice",
       data: args.length > 0 ? { message, args } : message,
     });
   }
 
-  async critical(message: string, ...args: any[]): Promise<void> {
+  async critical(message: string, ...args: unknown[]): Promise<void> {
     await this.logFn({
       level: "critical",
       data: args.length > 0 ? { message, args } : message,
     });
   }
 
-  async alert(message: string, ...args: any[]): Promise<void> {
+  async alert(message: string, ...args: unknown[]): Promise<void> {
     await this.logFn({
       level: "alert",
       data: args.length > 0 ? { message, args } : message,
     });
   }
 
-  async emergency(message: string, ...args: any[]): Promise<void> {
+  async emergency(message: string, ...args: unknown[]): Promise<void> {
     await this.logFn({
       level: "emergency",
       data: args.length > 0 ? { message, args } : message,
     });
   }
 
-  async trace(message: string, ...args: any[]): Promise<void> {
+  async trace(message: string, ...args: unknown[]): Promise<void> {
     await this.logFn({
       level: "debug",
       data: args.length > 0 ? { message, args } : message,
