@@ -1,4 +1,5 @@
 import { z } from "zod";
+import GboxSDK from "gbox-sdk";
 import { attachBox } from "../sdk/index.js";
 import { MCPLogger } from "../logger/logger.js";
 import type { ActionScreenshot } from "gbox-sdk";
@@ -19,14 +20,14 @@ export const waitParamsSchema = z.object({
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-export function handleWait(logger: MCPLogger) {
+export function handleWait(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async ({ boxId, duration }: z.infer<typeof waitParamsSchema>) => {
     // Wait the specified duration
     await sleep(duration);
 
     // Capture screenshot after waiting
     try {
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
       const screenshotParams: ActionScreenshot = { outputFormat: "base64" };
       const { uri } = await box.action.screenshot(screenshotParams);
 

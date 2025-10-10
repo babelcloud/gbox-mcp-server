@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { CreateLinux } from "gbox-sdk";
-import { gboxSDK } from "../sdk/index.js";
 import type { MCPLogger } from "../logger/logger.js";
 import { openUrlInBrowser } from "../sdk/utils.js";
+import GboxSDK from "gbox-sdk";
 
 export const START_BROWSER_BOX_TOOL = "start_browser_box";
 export const START_BROWSER_BOX_DESCRIPTION =
@@ -21,7 +21,7 @@ type StartBrowserBoxParams = z.infer<
   z.ZodObject<typeof startBrowserBoxParamsSchema>
 >;
 
-export function handleStartBrowserBox(logger: MCPLogger) {
+export function handleStartBrowserBox(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async (args: StartBrowserBoxParams) => {
     try {
       await logger.info("Starting Browser Box", args);

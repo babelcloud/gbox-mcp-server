@@ -1,4 +1,5 @@
 import { z } from "zod";
+import GboxSDK from "gbox-sdk";
 import { attachBox } from "../sdk/index.js";
 import type { MCPLogger } from "../logger/logger.js";
 import { extractImageInfo } from "../sdk/utils.js";
@@ -27,7 +28,7 @@ export const typeParamsSchema = {
 
 type TypeParams = z.infer<z.ZodObject<typeof typeParamsSchema>>;
 
-export function handleType(logger: MCPLogger) {
+export function handleType(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async ({
     boxId,
     content,
@@ -42,7 +43,7 @@ export function handleType(logger: MCPLogger) {
         replace: Boolean(replace),
       });
 
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
 
       // First, type the content
       const typeResult = await box.action.type({

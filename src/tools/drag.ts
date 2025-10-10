@@ -1,4 +1,5 @@
 import { z } from "zod";
+import GboxSDK from "gbox-sdk";
 import type { MCPLogger } from "../logger/logger.js";
 import { attachBox } from "../sdk/index.js";
 import { extractImageInfo } from "../sdk/utils.js";
@@ -25,12 +26,12 @@ export const dragParamsSchema = {
 // Define parameter types - infer from the Zod schema
 type DragParams = z.infer<z.ZodObject<typeof dragParamsSchema>>;
 
-export function handleDrag(logger: MCPLogger) {
+export function handleDrag(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async ({ boxId, target, destination }: DragParams) => {
     try {
       await logger.info("Drag command invoked", { boxId, target, destination });
 
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
       const result = await box.action.drag({
         start: target,
         end: destination,

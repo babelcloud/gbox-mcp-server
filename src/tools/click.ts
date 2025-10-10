@@ -1,4 +1,5 @@
 import { z } from "zod";
+import GboxSDK from "gbox-sdk";
 import type { MCPLogger } from "../logger/logger.js";
 import { attachBox } from "../sdk/index.js";
 import { extractImageInfo } from "../sdk/utils.js";
@@ -27,7 +28,7 @@ export const clickParamsSchema = {
 
 type ClickParams = z.infer<z.ZodObject<typeof clickParamsSchema>>;
 
-export function handleClick(logger: MCPLogger) {
+export function handleClick(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async ({ boxId, target, button, double }: ClickParams) => {
     try {
       await logger.info("Click command invoked", {
@@ -37,7 +38,7 @@ export function handleClick(logger: MCPLogger) {
         double,
       });
 
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
 
       const result = await box.action.click({
         target,

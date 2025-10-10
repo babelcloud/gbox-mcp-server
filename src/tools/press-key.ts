@@ -1,4 +1,5 @@
 import { z } from "zod";
+import GboxSDK from "gbox-sdk";
 import { attachBox } from "../sdk/index.js";
 import type { MCPLogger } from "../logger/logger.js";
 import type { ActionPressKey, TimeString } from "gbox-sdk";
@@ -159,14 +160,14 @@ export const pressKeyParamsSchema = {
 // Define parameter types - infer from the Zod schema
 type PressKeyParams = z.infer<z.ZodObject<typeof pressKeyParamsSchema>>;
 
-export function handlePressKey(logger: MCPLogger) {
+export function handlePressKey(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async (args: PressKeyParams) => {
     try {
       const { boxId, keys, includeScreenshot, outputFormat, screenshotDelay } =
         args;
       await logger.info("Pressing keys", { boxId, keys: keys.join(" + ") });
 
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
 
       const result = await box.action.pressKey({
         keys: keys as ActionPressKey["keys"],

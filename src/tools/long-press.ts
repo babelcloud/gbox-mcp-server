@@ -1,4 +1,5 @@
 import { z } from "zod";
+import GboxSDK from "gbox-sdk";
 import type { MCPLogger } from "../logger/logger.js";
 import { attachBox } from "../sdk/index.js";
 import { extractImageInfo } from "../sdk/utils.js";
@@ -29,7 +30,7 @@ export const longPressParamsSchema = {
 
 type LongPressParams = z.infer<z.ZodObject<typeof longPressParamsSchema>>;
 
-export function handleLongPress(logger: MCPLogger) {
+export function handleLongPress(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async ({ boxId, target, duration }: LongPressParams) => {
     try {
       await logger.info("Long press command invoked", {
@@ -38,7 +39,7 @@ export function handleLongPress(logger: MCPLogger) {
         duration,
       });
 
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
 
       const result = await box.action.longPress({
         target,

@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { MCPLogger } from "../logger/logger.js";
+import GboxSDK from "gbox-sdk";
 
 /**
  * Represents a single MCP session for Streamable HTTP transport
@@ -10,6 +11,7 @@ export class Session {
   readonly server: McpServer;
   readonly transport: StreamableHTTPServerTransport;
   readonly logger: MCPLogger;
+  readonly gboxSDK: GboxSDK;
   readonly createdAt: Date;
   lastActivityAt: Date;
   readonly platform: "android" | "linux" | "browser";
@@ -19,12 +21,14 @@ export class Session {
     server: McpServer,
     transport: StreamableHTTPServerTransport,
     logger: MCPLogger,
+    gboxSDK: GboxSDK,
     platform: "android" | "linux" | "browser"
   ) {
     this.id = id;
     this.server = server;
     this.transport = transport;
     this.logger = logger;
+    this.gboxSDK = gboxSDK;
     this.platform = platform;
     this.createdAt = new Date();
     this.lastActivityAt = new Date();

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import GboxSDK from "gbox-sdk";
 import { attachBox } from "../sdk/index.js";
 import type { MCPLogger } from "../logger/logger.js";
 import type { ActionPressButton } from "gbox-sdk";
@@ -37,7 +38,7 @@ export const pressButtonParamsSchema = {
 // Define parameter types - infer from the Zod schema
 type PressButtonParams = z.infer<z.ZodObject<typeof pressButtonParamsSchema>>;
 
-export function handlePressButton(logger: MCPLogger) {
+export function handlePressButton(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async ({ boxId, buttons }: PressButtonParams) => {
     try {
       await logger.info("Pressing buttons", {
@@ -45,7 +46,7 @@ export function handlePressButton(logger: MCPLogger) {
         buttons: buttons.join(" + "),
       });
 
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
       const result = await box.action.pressButton({
         buttons: buttons,
         options: {

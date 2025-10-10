@@ -1,9 +1,9 @@
 import GboxSDK, { LinuxBoxOperator } from "gbox-sdk";
 
-// Initialize Gbox SDK
-const gboxSDK = new GboxSDK();
-
-export async function attachBox(boxId: string): Promise<LinuxBoxOperator> {
+export async function attachBox(
+  boxId: string,
+  gboxSDK: GboxSDK
+): Promise<LinuxBoxOperator> {
   try {
     const box = (await gboxSDK.get(boxId)) as LinuxBoxOperator;
     return box;
@@ -13,5 +13,3 @@ export async function attachBox(boxId: string): Promise<LinuxBoxOperator> {
     );
   }
 }
-
-export { gboxSDK };

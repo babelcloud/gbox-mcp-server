@@ -1,4 +1,5 @@
 import { z } from "zod";
+import GboxSDK from "gbox-sdk";
 import type { MCPLogger } from "../logger/logger.js";
 import { attachBox } from "../sdk/index.js";
 import { extractImageInfo } from "../sdk/utils.js";
@@ -19,12 +20,12 @@ export const tapParamsSchema = {
 
 type TapParams = z.infer<z.ZodObject<typeof tapParamsSchema>>;
 
-export function handleTap(logger: MCPLogger) {
+export function handleTap(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async ({ boxId, target }: TapParams) => {
     try {
       await logger.info("Tap command invoked", { boxId, target });
 
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
 
       const result = await box.action.tap({
         target,

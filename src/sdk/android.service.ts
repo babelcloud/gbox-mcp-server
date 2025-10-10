@@ -1,10 +1,10 @@
 import GboxSDK, { AndroidBoxOperator } from "gbox-sdk";
 import type { DeviceInfo } from "gbox-sdk/resources/v1.js";
 
-// Initialize Gbox SDK
-const gboxSDK = new GboxSDK();
-
-export async function attachBox(boxId: string): Promise<AndroidBoxOperator> {
+export async function attachBox(
+  boxId: string,
+  gboxSDK: GboxSDK
+): Promise<AndroidBoxOperator> {
   try {
     const box = (await gboxSDK.get(boxId)) as AndroidBoxOperator;
     return box;
@@ -16,6 +16,7 @@ export async function attachBox(boxId: string): Promise<AndroidBoxOperator> {
 }
 
 export async function deviceList(
+  gboxSDK: GboxSDK,
   availableOnly: boolean = true
 ): Promise<DeviceInfo[]> {
   try {
@@ -35,5 +36,3 @@ export async function deviceList(
     return [];
   }
 }
-
-export { gboxSDK };

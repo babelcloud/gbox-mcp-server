@@ -1,4 +1,5 @@
 import { z } from "zod";
+import GboxSDK from "gbox-sdk";
 import type { MCPLogger } from "../logger/logger.js";
 import { attachBox } from "../sdk/index.js";
 import { extractImageInfo } from "../sdk/utils.js";
@@ -15,12 +16,12 @@ export const openTabParamsSchema = {
 
 type OpenTabParams = z.infer<z.ZodObject<typeof openTabParamsSchema>>;
 
-export function handleOpenTab(logger: MCPLogger) {
+export function handleOpenTab(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async ({ boxId, url }: OpenTabParams) => {
     try {
       await logger.info("Open tab command invoked", { boxId, url });
 
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
 
       // Open new tab
       const result = await box.browser.openTab(url);

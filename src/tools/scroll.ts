@@ -1,4 +1,5 @@
 import { z } from "zod";
+import GboxSDK from "gbox-sdk";
 import type { MCPLogger } from "../logger/logger.js";
 import { attachBox } from "../sdk/index.js";
 import { extractImageInfo } from "../sdk/utils.js";
@@ -37,7 +38,7 @@ function getScrollAmount(
   return amounts[distance];
 }
 
-export function handleScroll(logger: MCPLogger) {
+export function handleScroll(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async ({ boxId, direction, distance = "medium" }: ScrollParams) => {
     try {
       await logger.info("Scroll command invoked", {
@@ -46,7 +47,7 @@ export function handleScroll(logger: MCPLogger) {
         distance,
       });
 
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
 
       // Get display resolution to calculate scroll position and amount
       const display = await box.display();

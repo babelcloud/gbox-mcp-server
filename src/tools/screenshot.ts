@@ -3,6 +3,7 @@ import { attachBox } from "../sdk/index.js";
 import type { MCPLogger } from "../logger/logger.js";
 import type { ActionScreenshot } from "gbox-sdk";
 import { extractImageInfo } from "../sdk/utils.js";
+import GboxSDK from "gbox-sdk";
 
 export const SCREENSHOT_TOOL = "screenshot";
 export const SCREENSHOT_DESCRIPTION =
@@ -20,12 +21,12 @@ export const screenshotParamsSchema = {
 // Define parameter types - infer from the Zod schema
 type ScreenshotParams = z.infer<z.ZodObject<typeof screenshotParamsSchema>>;
 
-export function handleScreenshot(logger: MCPLogger) {
+export function handleScreenshot(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async ({ boxId }: ScreenshotParams) => {
     try {
       await logger.info("Taking screenshot", { boxId });
 
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
 
       // Map to SDK ActionScreenshot type
       const actionParams: ActionScreenshot = {

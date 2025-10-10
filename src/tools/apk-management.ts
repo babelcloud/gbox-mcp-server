@@ -3,6 +3,7 @@ import { attachBox } from "../sdk/index.js";
 import type { MCPLogger } from "../logger/logger.js";
 import type { AndroidInstall, ActionScreenshot } from "gbox-sdk";
 import { extractImageInfo } from "../sdk/utils.js";
+import GboxSDK from "gbox-sdk";
 
 export const INSTALL_APK_TOOL = "install_apk";
 export const INSTALL_APK_DESCRIPTION =
@@ -65,13 +66,13 @@ type UninstallApkParams = z.infer<z.ZodObject<typeof uninstallApkParamsSchema>>;
 type OpenAppParams = z.infer<z.ZodObject<typeof openAppParamsSchema>>;
 type CloseAppParams = z.infer<z.ZodObject<typeof closeAppParamsSchema>>;
 
-export function handleInstallApk(logger: MCPLogger) {
+export function handleInstallApk(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async (args: InstallApkParams) => {
     try {
       const { boxId, apk, open } = args;
       await logger.info("Installing APK", { boxId, apk });
 
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
       let apkPath = apk;
       if (apk?.startsWith("file://")) {
         apkPath = apk.slice(7);
@@ -128,13 +129,13 @@ export function handleInstallApk(logger: MCPLogger) {
   };
 }
 
-export function handleUninstallApk(logger: MCPLogger) {
+export function handleUninstallApk(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async (args: UninstallApkParams) => {
     try {
       const { boxId, packageName } = args;
       await logger.info("Uninstalling APK", { boxId, packageName });
 
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
       await box.app.uninstall(packageName, {});
 
       await logger.info("APK uninstalled successfully", { boxId, packageName });
@@ -166,13 +167,13 @@ export function handleUninstallApk(logger: MCPLogger) {
   };
 }
 
-export function handleOpenApp(logger: MCPLogger) {
+export function handleOpenApp(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async (args: OpenAppParams) => {
     try {
       const { boxId, packageName } = args;
       await logger.info("Opening app", { boxId, packageName });
 
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
       const app = await box.app.get(packageName);
       await app.open();
 
@@ -216,13 +217,13 @@ export function handleOpenApp(logger: MCPLogger) {
   };
 }
 
-export function handleCloseApp(logger: MCPLogger) {
+export function handleCloseApp(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async (args: CloseAppParams) => {
     try {
       const { boxId, packageName } = args;
       await logger.info("Closing app", { boxId, packageName });
 
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
       const app = await box.app.get(packageName);
       await app.close();
 
