@@ -1,4 +1,5 @@
 import { z } from "zod";
+import GboxSDK from "gbox-sdk";
 import type { MCPLogger } from "../logger/logger.js";
 import { attachBox } from "../sdk/index.js";
 import { extractImageInfo } from "../sdk/utils.js";
@@ -14,12 +15,12 @@ export const openBrowserParamsSchema = {
 
 type OpenBrowserParams = z.infer<z.ZodObject<typeof openBrowserParamsSchema>>;
 
-export function handleOpenBrowser(logger: MCPLogger) {
+export function handleOpenBrowser(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async ({ boxId }: OpenBrowserParams) => {
     try {
       await logger.info("Open browser command invoked", { boxId });
 
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
 
       // Open browser
       await box.browser.open({ maximize: true });

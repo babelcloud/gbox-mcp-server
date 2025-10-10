@@ -1,4 +1,5 @@
 import { z } from "zod";
+import GboxSDK from "gbox-sdk";
 import { attachBox } from "../sdk/index.js";
 import type { MCPLogger } from "../logger/logger.js";
 
@@ -46,13 +47,13 @@ export const logcatParamsSchema = {
 // Define parameter types - infer from the Zod schema
 type LogcatParams = z.infer<z.ZodObject<typeof logcatParamsSchema>>;
 
-export function handleLogcat(logger: MCPLogger) {
+export function handleLogcat(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async (args: LogcatParams) => {
     try {
       const { boxId, source, filterSpecs, regexFilter, pid, tailLines } = args;
       await logger.info("Executing logcat command", { args });
 
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
 
       // Build the logcat command from the parameters
       const command: string[] = ["logcat"];

@@ -1,10 +1,10 @@
 import { z } from "zod";
 import { CreateAndroid } from "gbox-sdk";
-import { gboxSDK } from "../sdk/index.js";
 import type { MCPLogger } from "../logger/logger.js";
 import { openUrlInBrowser, startLocalScrcpy } from "../sdk/utils.js";
 import { deviceList } from "../sdk/android.service.js";
 import { calculateResizeRatio } from "../sdk/utils.js";
+import GboxSDK from "gbox-sdk";
 
 export const START_ANDROID_BOX_TOOL = "start_android_box";
 export const START_ANDROID_BOX_DESCRIPTION =
@@ -23,7 +23,7 @@ type StartAndroidBoxParams = z.infer<
   z.ZodObject<typeof startAndroidBoxParamsSchema>
 >;
 
-export function handleStartAndroidBox(logger: MCPLogger) {
+export function handleStartAndroidBox(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async (args: StartAndroidBoxParams) => {
     try {
       await logger.info("Starting Box", args);
@@ -35,7 +35,7 @@ export function handleStartAndroidBox(logger: MCPLogger) {
       let deviceModel = "";
       if (!gboxId) {
         // If local physical device available, use it
-        const devices = await deviceList();
+        const devices = await deviceList(gboxSDK);
         logger.info("Devices", { devices });
         if (devices.length > 0) {
           // Always use the first available device

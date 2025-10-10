@@ -1,4 +1,5 @@
 import { z } from "zod";
+import GboxSDK from "gbox-sdk";
 import { attachBox } from "../sdk/index.js";
 import type { MCPLogger } from "../logger/logger.js";
 import type { BoxExecuteCommands } from "gbox-sdk";
@@ -36,13 +37,13 @@ export const adbShellParamsSchema = {
 
 type AdbShellParams = z.infer<z.ZodObject<typeof adbShellParamsSchema>>;
 
-export function handleAdbShell(logger: MCPLogger) {
+export function handleAdbShell(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async (args: AdbShellParams) => {
     try {
       const { boxId, shellCommand, timeout, workingDir } = args;
       await logger.info("Executing adb shell command", { args });
 
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
 
       const commandParts = shellCommand.split(" ");
 

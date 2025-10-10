@@ -1,4 +1,5 @@
 import { z } from "zod";
+import GboxSDK from "gbox-sdk";
 import type { MCPLogger } from "../logger/logger.js";
 import { attachBox } from "../sdk/index.js";
 
@@ -13,12 +14,12 @@ export const listTabsParamsSchema = {
 
 type ListTabsParams = z.infer<z.ZodObject<typeof listTabsParamsSchema>>;
 
-export function handleListTabs(logger: MCPLogger) {
+export function handleListTabs(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async ({ boxId }: ListTabsParams) => {
     try {
       await logger.info("List tabs command invoked", { boxId });
 
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
 
       // Get tab information
       const tabInfo = await box.browser.listTabInfo();

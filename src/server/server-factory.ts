@@ -1,6 +1,7 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { MCPLogger } from "../logger/logger.js";
 import { gboxManualTpl } from "../prompts/gbox-manual.js";
+import GboxSDK from "gbox-sdk";
 
 // Import all tools
 import {
@@ -171,41 +172,42 @@ export class McpServerFactory {
    */
   private static registerCommonTools(
     server: McpServer,
-    logger: MCPLogger
+    logger: MCPLogger,
+    gboxSDK: GboxSDK
   ): void {
     server.tool(
       WAIT_TOOL,
       WAIT_TOOL_DESCRIPTION,
       waitParamsSchema.shape,
-      handleWait(logger)
+      handleWait(logger, gboxSDK)
     );
 
     server.tool(
       SCREENSHOT_TOOL,
       SCREENSHOT_DESCRIPTION,
       screenshotParamsSchema,
-      handleScreenshot(logger)
+      handleScreenshot(logger, gboxSDK)
     );
 
     server.tool(
       DRAG_TOOL,
       DRAG_DESCRIPTION,
       dragParamsSchema,
-      handleDrag(logger)
+      handleDrag(logger, gboxSDK)
     );
 
     server.tool(
       TYPE_TOOL,
       TYPE_DESCRIPTION,
       typeParamsSchema,
-      handleType(logger)
+      handleType(logger, gboxSDK)
     );
 
     server.tool(
       LONG_PRESS_TOOL,
       LONG_PRESS_DESCRIPTION,
       longPressParamsSchema,
-      handleLongPress(logger)
+      handleLongPress(logger, gboxSDK)
     );
   }
 
@@ -214,51 +216,57 @@ export class McpServerFactory {
    */
   private static registerAndroidTools(
     server: McpServer,
-    logger: MCPLogger
+    logger: MCPLogger,
+    gboxSDK: GboxSDK
   ): void {
     server.tool(
       START_ANDROID_BOX_TOOL,
       START_ANDROID_BOX_DESCRIPTION,
       startAndroidBoxParamsSchema,
-      handleStartAndroidBox(logger)
+      handleStartAndroidBox(logger, gboxSDK)
     );
 
     server.tool(
       OPEN_APP_TOOL,
       OPEN_APP_DESCRIPTION,
       openAppParamsSchema,
-      handleOpenApp(logger)
+      handleOpenApp(logger, gboxSDK)
     );
 
     server.tool(
       CLOSE_APP_TOOL,
       CLOSE_APP_DESCRIPTION,
       closeAppParamsSchema,
-      handleCloseApp(logger)
+      handleCloseApp(logger, gboxSDK)
     );
 
     server.tool(
       INSTALL_APK_TOOL,
       INSTALL_APK_DESCRIPTION,
       installApkParamsSchema,
-      handleInstallApk(logger)
+      handleInstallApk(logger, gboxSDK)
     );
 
     server.tool(
       PRESS_BUTTON_TOOL,
       PRESS_BUTTON_DESCRIPTION,
       pressButtonParamsSchema,
-      handlePressButton(logger)
+      handlePressButton(logger, gboxSDK)
     );
 
     server.tool(
       SWIPE_TOOL,
       SWIPE_DESCRIPTION,
       swipeParamsSchema,
-      handleSwipe(logger)
+      handleSwipe(logger, gboxSDK)
     );
 
-    server.tool(TAP_TOOL, TAP_DESCRIPTION, tapParamsSchema, handleTap(logger));
+    server.tool(
+      TAP_TOOL,
+      TAP_DESCRIPTION,
+      tapParamsSchema,
+      handleTap(logger, gboxSDK)
+    );
   }
 
   /**
@@ -266,41 +274,42 @@ export class McpServerFactory {
    */
   private static registerLinuxTools(
     server: McpServer,
-    logger: MCPLogger
+    logger: MCPLogger,
+    gboxSDK: GboxSDK
   ): void {
     server.tool(
       START_LINUX_BOX_TOOL,
       START_LINUX_BOX_DESCRIPTION,
       startLinuxBoxParamsSchema,
-      handleStartLinuxBox(logger)
+      handleStartLinuxBox(logger, gboxSDK)
     );
 
     server.tool(
       CLICK_TOOL,
       CLICK_DESCRIPTION,
       clickParamsSchema,
-      handleClick(logger)
+      handleClick(logger, gboxSDK)
     );
 
     server.tool(
       SCROLL_TOOL,
       SCROLL_DESCRIPTION,
       scrollParamsSchema,
-      handleScroll(logger)
+      handleScroll(logger, gboxSDK)
     );
 
     server.tool(
       OPEN_BROWSER_TOOL,
       OPEN_BROWSER_DESCRIPTION,
       openBrowserParamsSchema,
-      handleOpenBrowser(logger)
+      handleOpenBrowser(logger, gboxSDK)
     );
 
     server.tool(
       PRESS_KEY_TOOL,
       PRESS_KEY_DESCRIPTION,
       pressKeyParamsSchema,
-      handlePressKey(logger)
+      handlePressKey(logger, gboxSDK)
     );
   }
 
@@ -309,62 +318,63 @@ export class McpServerFactory {
    */
   private static registerBrowserTools(
     server: McpServer,
-    logger: MCPLogger
+    logger: MCPLogger,
+    gboxSDK: GboxSDK
   ): void {
     server.tool(
       START_BROWSER_BOX_TOOL,
       START_BROWSER_BOX_DESCRIPTION,
       startBrowserBoxParamsSchema,
-      handleStartBrowserBox(logger)
+      handleStartBrowserBox(logger, gboxSDK)
     );
 
     server.tool(
       CLICK_TOOL,
       CLICK_DESCRIPTION,
       clickParamsSchema,
-      handleClick(logger)
+      handleClick(logger, gboxSDK)
     );
 
     server.tool(
       SCROLL_TOOL,
       SCROLL_DESCRIPTION,
       scrollParamsSchema,
-      handleScroll(logger)
+      handleScroll(logger, gboxSDK)
     );
 
     server.tool(
       PRESS_KEY_TOOL,
       PRESS_KEY_DESCRIPTION,
       pressKeyParamsSchema,
-      handlePressKey(logger)
+      handlePressKey(logger, gboxSDK)
     );
 
     server.tool(
       LIST_TABS_TOOL,
       LIST_TABS_DESCRIPTION,
       listTabsParamsSchema,
-      handleListTabs(logger)
+      handleListTabs(logger, gboxSDK)
     );
 
     server.tool(
       OPEN_TAB_TOOL,
       OPEN_TAB_DESCRIPTION,
       openTabParamsSchema,
-      handleOpenTab(logger)
+      handleOpenTab(logger, gboxSDK)
     );
 
     server.tool(
       SWITCH_TAB_TOOL,
       SWITCH_TAB_DESCRIPTION,
       switchTabParamsSchema,
-      handleSwitchTab(logger)
+      handleSwitchTab(logger, gboxSDK)
     );
 
     server.tool(
       CLOSE_TAB_TOOL,
       CLOSE_TAB_DESCRIPTION,
       closeTabParamsSchema,
-      handleCloseTab(logger)
+      handleCloseTab(logger, gboxSDK)
     );
   }
 
@@ -374,21 +384,22 @@ export class McpServerFactory {
   static registerTools(
     server: McpServer,
     platform: "android" | "linux" | "browser",
-    logger: MCPLogger
+    logger: MCPLogger,
+    gboxSDK: GboxSDK
   ): void {
     // Register common tools first
-    this.registerCommonTools(server, logger);
+    this.registerCommonTools(server, logger, gboxSDK);
 
     // Register platform-specific tools
     switch (platform) {
       case "android":
-        this.registerAndroidTools(server, logger);
+        this.registerAndroidTools(server, logger, gboxSDK);
         break;
       case "linux":
-        this.registerLinuxTools(server, logger);
+        this.registerLinuxTools(server, logger, gboxSDK);
         break;
       case "browser":
-        this.registerBrowserTools(server, logger);
+        this.registerBrowserTools(server, logger, gboxSDK);
         break;
       default:
         // No additional tools for unknown platforms

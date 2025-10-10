@@ -1,4 +1,5 @@
 import { z } from "zod";
+import GboxSDK from "gbox-sdk";
 import type { MCPLogger } from "../logger/logger.js";
 import { attachBox } from "../sdk/index.js";
 import { extractImageInfo } from "../sdk/utils.js";
@@ -29,7 +30,7 @@ export const swipeParamsSchema = {
 
 type SwipeParams = z.infer<z.ZodObject<typeof swipeParamsSchema>>;
 
-export function handleSwipe(logger: MCPLogger) {
+export function handleSwipe(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async ({ boxId, direction, distance, location }: SwipeParams) => {
     try {
       await logger.info("Swipe command invoked", {
@@ -39,7 +40,7 @@ export function handleSwipe(logger: MCPLogger) {
         location,
       });
 
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
 
       const actionResult = await box.action.swipe({
         location,

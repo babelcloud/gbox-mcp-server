@@ -3,6 +3,8 @@ import { Session } from "./session.js";
 import { McpServerFactory } from "../server/server-factory.js";
 import { MCPLogger } from "../logger/logger.js";
 import type { LogFn } from "../logger/types.js";
+import { createGboxSDK } from "../sdk/client.js";
+import { ClientOptions } from "gbox-sdk";
 
 export interface ServerConfig {
   name: string;
@@ -39,7 +41,8 @@ export class SessionManager {
    */
   async createSession(
     sessionId: string,
-    transport: StreamableHTTPServerTransport
+    transport: StreamableHTTPServerTransport,
+    userConfig?: ClientOptions
   ): Promise<Session> {
     // Check if session already exists
     if (this.sessions.has(sessionId)) {
@@ -90,8 +93,16 @@ export class SessionManager {
     };
     const logger = new MCPLogger(logFn);
 
+    // Create SDK instance for this session
+    const gboxSDK = createGboxSDK(userConfig || {});
+
     // Register tools and prompts
-    McpServerFactory.registerTools(server, this.config.platform, logger);
+    McpServerFactory.registerTools(
+      server,
+      this.config.platform,
+      logger,
+      gboxSDK
+    );
     McpServerFactory.registerPrompts(server);
 
     // Create session
@@ -100,6 +111,7 @@ export class SessionManager {
       server,
       transport,
       logger,
+      gboxSDK,
       this.config.platform
     );
     this.sessions.set(sessionId, session);

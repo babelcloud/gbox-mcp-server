@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { CreateLinux } from "gbox-sdk";
-import { gboxSDK } from "../sdk/index.js";
 import type { MCPLogger } from "../logger/logger.js";
 import { openUrlInBrowser } from "../sdk/utils.js";
+import GboxSDK from "gbox-sdk";
 
 export const START_LINUX_BOX_TOOL = "start_linux_box";
 export const START_LINUX_BOX_DESCRIPTION =
@@ -21,7 +21,7 @@ type StartLinuxBoxParams = z.infer<
   z.ZodObject<typeof startLinuxBoxParamsSchema>
 >;
 
-export function handleStartLinuxBox(logger: MCPLogger) {
+export function handleStartLinuxBox(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async (args: StartLinuxBoxParams) => {
     try {
       await logger.info("Starting Linux Box", args);

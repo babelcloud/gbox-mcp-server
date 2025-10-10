@@ -5,6 +5,8 @@ import { MCPLogger } from "../logger/logger.js";
 import { config } from "../config.js";
 import type { LogFn } from "../logger/types.js";
 import type { LoggingMessageNotification } from "@modelcontextprotocol/sdk/types.js";
+import { createDefaultGboxSDK } from "../sdk/client.js";
+import GboxSDK from "gbox-sdk";
 
 /**
  * STDIO server for MCP (singleton mode)
@@ -12,6 +14,7 @@ import type { LoggingMessageNotification } from "@modelcontextprotocol/sdk/types
 class StdioServer {
   private mcpServer: McpServer;
   private logger: MCPLogger;
+  private gboxSDK: GboxSDK;
 
   constructor() {
     // Create single McpServer instance
@@ -36,11 +39,15 @@ class StdioServer {
 
     this.logger = new MCPLogger(logFn);
 
+    // Create global SDK instance
+    this.gboxSDK = createDefaultGboxSDK();
+
     // Register tools and prompts
     McpServerFactory.registerTools(
       this.mcpServer,
       config.platform,
-      this.logger
+      this.logger,
+      this.gboxSDK
     );
     McpServerFactory.registerPrompts(this.mcpServer);
   }

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import GboxSDK from "gbox-sdk";
 import type { MCPLogger } from "../logger/logger.js";
 import { attachBox } from "../sdk/index.js";
 
@@ -14,12 +15,12 @@ export const closeTabParamsSchema = {
 
 type CloseTabParams = z.infer<z.ZodObject<typeof closeTabParamsSchema>>;
 
-export function handleCloseTab(logger: MCPLogger) {
+export function handleCloseTab(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async ({ boxId, tabId }: CloseTabParams) => {
     try {
       await logger.info("Close tab command invoked", { boxId, tabId });
 
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
 
       // Check number of tabs before closing
       const tabInfo = await box.browser.listTabInfo();

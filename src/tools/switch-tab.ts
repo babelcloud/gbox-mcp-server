@@ -1,4 +1,5 @@
 import { z } from "zod";
+import GboxSDK from "gbox-sdk";
 import type { MCPLogger } from "../logger/logger.js";
 import { attachBox } from "../sdk/index.js";
 import { extractImageInfo } from "../sdk/utils.js";
@@ -15,12 +16,12 @@ export const switchTabParamsSchema = {
 
 type SwitchTabParams = z.infer<z.ZodObject<typeof switchTabParamsSchema>>;
 
-export function handleSwitchTab(logger: MCPLogger) {
+export function handleSwitchTab(logger: MCPLogger, gboxSDK: GboxSDK) {
   return async ({ boxId, tabId }: SwitchTabParams) => {
     try {
       await logger.info("Switch tab command invoked", { boxId, tabId });
 
-      const box = await attachBox(boxId);
+      const box = await attachBox(boxId, gboxSDK);
 
       // Switch to tab
       await box.browser.switchTab(tabId);
