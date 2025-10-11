@@ -5,11 +5,12 @@ import { MCPLogger } from "../logger/logger.js";
 import type { LogFn } from "../logger/types.js";
 import { createGboxSDK } from "../sdk/client.js";
 import { ClientOptions } from "gbox-sdk";
+import { Platform } from "../types/platform.js";
 
 export interface ServerConfig {
   name: string;
   version: string;
-  platform: "android" | "linux" | "browser";
+  platform: Platform;
   capabilities: {
     prompts: Record<string, never>;
     resources: Record<string, never>;

@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { MCPLogger } from "../logger/logger.js";
 import { gboxManualTpl } from "../prompts/gbox-manual.js";
 import GboxSDK from "gbox-sdk";
+import { Platform } from "../types/platform.js";
 
 // Import all tools
 import {
@@ -144,7 +145,7 @@ export class McpServerFactory {
     config: {
       name: string;
       version: string;
-      platform: "android" | "linux" | "browser";
+      platform: Platform;
       capabilities: {
         prompts: Record<string, never>;
         resources: Record<string, never>;
@@ -383,7 +384,7 @@ export class McpServerFactory {
    */
   static registerTools(
     server: McpServer,
-    platform: "android" | "linux" | "browser",
+    platform: Platform,
     logger: MCPLogger,
     gboxSDK: GboxSDK
   ): void {
