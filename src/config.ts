@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { Platform, PLATFORMS } from "./types/platform.js";
 
 // Parse command line arguments for platform selection
 const args = process.argv.slice(2);
@@ -9,5 +10,6 @@ const platform = platformArg?.replace("--", "") || "android"; // default to andr
 
 export const config = {
   mode: process.env.MODE?.toLowerCase() || "stdio",
-  platform: platform as "android" | "linux" | "browser",
+  platform: platform as Platform,
+  allPlatforms: PLATFORMS,
 };
