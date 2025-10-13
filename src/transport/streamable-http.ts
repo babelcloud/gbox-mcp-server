@@ -5,6 +5,8 @@ import { isInitializeRequest } from "@modelcontextprotocol/sdk/types.js";
 import { SessionManager, ServerConfig } from "../session/session-manager.js";
 import { config } from "../config.js";
 import { Platform } from "../types/platform.js";
+import { jwtAuthMiddleware } from "../middleware/auth.js";
+import { AuthenticatedRequest } from "../types/auth.js";
 
 /**
  * Streamable HTTP server for MCP sessions
@@ -45,27 +47,39 @@ export class StreamableHTTPServer {
     config.allPlatforms.forEach(platform => {
       const basePath = `/mcp/${platform}`;
 
-      this.app.post(basePath, async (req, res) => {
+      this.app.post(basePath, jwtAuthMiddleware, async (req, res) => {
         try {
-          await this.handlePostRequest(req, res, platform);
+          await this.handlePostRequest(
+            req as AuthenticatedRequest,
+            res,
+            platform
+          );
         } catch (error) {
           console.error(`Error handling POST request for ${platform}:`, error);
           res.status(500).json({ error: "Internal server error" });
         }
       });
 
-      this.app.get(basePath, async (req, res) => {
+      this.app.get(basePath, jwtAuthMiddleware, async (req, res) => {
         try {
-          await this.handleSessionRequest(req, res, platform);
+          await this.handleSessionRequest(
+            req as AuthenticatedRequest,
+            res,
+            platform
+          );
         } catch (error) {
           console.error(`Error handling GET request for ${platform}:`, error);
           res.status(500).json({ error: "Internal server error" });
         }
       });
 
-      this.app.delete(basePath, async (req, res) => {
+      this.app.delete(basePath, jwtAuthMiddleware, async (req, res) => {
         try {
-          await this.handleSessionRequest(req, res, platform);
+          await this.handleSessionRequest(
+            req as AuthenticatedRequest,
+            res,
+            platform
+          );
         } catch (error) {
           console.error(
             `Error handling DELETE request for ${platform}:`,
@@ -81,7 +95,7 @@ export class StreamableHTTPServer {
    * Handle POST requests for client-to-server communication
    */
   private async handlePostRequest(
-    req: express.Request,
+    req: AuthenticatedRequest,
     res: express.Response,
     platform: Platform
   ): Promise<void> {
@@ -111,7 +125,27 @@ export class StreamableHTTPServer {
         }
       };
 
-      session = await sessionManager.createSession(newSessionId, transport);
+      const apiKey = req.user?.apiKey;
+      if (!apiKey) {
+        res.status(400).json({
+          jsonrpc: "2.0",
+          error: {
+            code: -32000,
+            message: "Bad Request: No valid API key provided",
+          },
+        });
+        return;
+      }
+
+      const userConfig = {
+        apiKey: apiKey,
+        baseURL: process.env.GBOX_ISSUER + "/api/v1",
+      };
+      session = await sessionManager.createSession(
+        newSessionId,
+        transport,
+        userConfig
+      );
 
       await session.server.connect(transport);
       await transport.handleRequest(req, res, req.body);
@@ -132,7 +166,7 @@ export class StreamableHTTPServer {
    * Reusable handler for GET and DELETE requests
    */
   private async handleSessionRequest(
-    req: express.Request,
+    req: AuthenticatedRequest,
     res: express.Response,
     platform: Platform
   ): Promise<void> {
