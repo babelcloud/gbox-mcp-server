@@ -19,6 +19,7 @@ export const clickParamsSchema = {
   button: z
     .enum(["left", "right", "middle"])
     .optional()
+    .default("left")
     .describe("Mouse button to click. Default is 'left'."),
   double: z
     .boolean()
