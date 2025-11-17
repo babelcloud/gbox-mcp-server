@@ -44,15 +44,24 @@ async function detectElementWithHandy(
       },
     });
 
+    // Check if response is a click action
+    if (result.response.type !== "click") {
+      await logger.error("GBOX Handy returned unexpected action type", {
+        target,
+        responseType: result.response.type,
+        requestId: result.id,
+      });
+      return null;
+    }
+
+    // Type assertion after type guard - we know it's a click response with x, y coordinates
+    const clickCoords = result.response.coordinates as { x: number; y: number };
+
     // Check if coordinates are valid (not -1, -1 which indicates no target found)
-    if (
-      result.response.type === "click" &&
-      result.response.coordinates.x !== -1 &&
-      result.response.coordinates.y !== -1
-    ) {
+    if (clickCoords.x !== -1 && clickCoords.y !== -1) {
       const coordinates = {
-        x: Math.round(result.response.coordinates.x),
-        y: Math.round(result.response.coordinates.y),
+        x: Math.round(clickCoords.x),
+        y: Math.round(clickCoords.y),
       };
 
       await logger.info("GBOX Handy detected element", {
@@ -64,7 +73,7 @@ async function detectElementWithHandy(
       return coordinates;
     }
 
-    await logger.warn("GBOX Handy could not find element", {
+    await logger.info("GBOX Handy could not find element", {
       target,
       requestId: result.id,
     });
