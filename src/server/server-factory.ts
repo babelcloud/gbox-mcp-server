@@ -133,6 +133,12 @@ import {
   CLOSE_TAB_TOOL,
   closeTabParamsSchema,
 } from "../tools/close-tab.js";
+import {
+  handleHover,
+  HOVER_DESCRIPTION,
+  HOVER_TOOL,
+  hoverParamsSchema,
+} from "../tools/hover.js";
 
 /**
  * Factory class for creating McpServer instances
@@ -312,6 +318,13 @@ export class McpServerFactory {
       pressKeyParamsSchema,
       handlePressKey(logger, gboxSDK)
     );
+
+    server.tool(
+      HOVER_TOOL,
+      HOVER_DESCRIPTION,
+      hoverParamsSchema,
+      handleHover(logger, gboxSDK)
+    );
   }
 
   /**
@@ -376,6 +389,13 @@ export class McpServerFactory {
       CLOSE_TAB_DESCRIPTION,
       closeTabParamsSchema,
       handleCloseTab(logger, gboxSDK)
+    );
+
+    server.tool(
+      HOVER_TOOL,
+      HOVER_DESCRIPTION,
+      hoverParamsSchema,
+      handleHover(logger, gboxSDK)
     );
   }
 
