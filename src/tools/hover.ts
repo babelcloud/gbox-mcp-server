@@ -22,22 +22,22 @@ type HoverParams = z.infer<z.ZodObject<typeof hoverParamsSchema>>;
 
 /**
  * Call GBOX Handy API to detect element coordinates using SDK
+ * @throws Error if element detection fails or element not found
  */
 async function detectElementWithHandy(
-  screenshotUrl: string,
+  screenshotUri: string,
   target: string,
   logger: MCPLogger,
   gboxSDK: GboxSDK
-): Promise<{ x: number; y: number } | null> {
+): Promise<{ x: number; y: number }> {
   try {
     await logger.debug("Calling GBOX Handy API", {
       target,
-      screenshotUrl,
     });
 
     const result = await gboxSDK.model.call({
       model: "gbox-handy-1",
-      screenshot: screenshotUrl,
+      screenshot: screenshotUri,
       action: {
         type: "click",
         target: target,
@@ -51,39 +51,42 @@ async function detectElementWithHandy(
         responseType: result.response.type,
         requestId: result.id,
       });
-      return null;
+      throw new Error(
+        `GBOX Handy returned unexpected action type: ${result.response.type}`
+      );
     }
 
-    // Type assertion after type guard - we know it's a click response with x, y coordinates
     const clickCoords = result.response.coordinates as { x: number; y: number };
 
     // Check if coordinates are valid (not -1, -1 which indicates no target found)
-    if (clickCoords.x !== -1 && clickCoords.y !== -1) {
-      const coordinates = {
-        x: Math.round(clickCoords.x),
-        y: Math.round(clickCoords.y),
-      };
-
-      await logger.info("GBOX Handy detected element", {
+    if (clickCoords.x === -1 && clickCoords.y === -1) {
+      await logger.info("GBOX Handy could not find element", {
         target,
-        coordinates,
         requestId: result.id,
       });
-
-      return coordinates;
+      throw new Error(
+        `Element not found: "${target}". Please provide a more specific description.`
+      );
     }
 
-    await logger.info("GBOX Handy could not find element", {
+    const coordinates = {
+      x: Math.round(clickCoords.x),
+      y: Math.round(clickCoords.y),
+    };
+
+    await logger.info("GBOX Handy detected element", {
       target,
+      coordinates,
       requestId: result.id,
     });
-    return null;
+
+    return coordinates;
   } catch (error) {
     await logger.error("GBOX Handy detection failed", {
       error: error instanceof Error ? error.message : String(error),
       target,
     });
-    return null;
+    throw error;
   }
 }
 
@@ -111,32 +114,20 @@ export function handleHover(logger: MCPLogger, gboxSDK: GboxSDK) {
       // Step 2: Take screenshot
       await logger.debug("Taking screenshot for element detection");
       const screenshotResult = await box.action.screenshot({
-        outputFormat: "storageKey",
+        outputFormat: "base64",
       });
 
-      if (!screenshotResult || !screenshotResult.presignedUrl) {
-        throw new Error("Failed to capture screenshot or get presigned URL");
+      if (!screenshotResult || !screenshotResult.uri) {
+        throw new Error("Failed to capture screenshot");
       }
 
-      // Step 3: Detect element with GBOX Handy using presigned URL
+      // Step 3: Detect element with GBOX Handy using base64 screenshot
       const coordinates = await detectElementWithHandy(
-        screenshotResult.presignedUrl,
+        screenshotResult.uri,
         target,
         logger,
         gboxSDK
       );
-
-      if (!coordinates) {
-        return {
-          content: [
-            {
-              type: "text" as const,
-              text: `Element not found: "${target}". Please provide a more specific description.`,
-            },
-          ],
-          isError: true,
-        };
-      }
 
       // Step 4: Execute move action with coordinates
       await logger.debug("Moving mouse to coordinates", {
